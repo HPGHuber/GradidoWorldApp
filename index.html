@@ -14,32 +14,31 @@
         .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
         .animate-float { animation: float 6s ease-in-out infinite; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .loader { border-top-color: #22c55e; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 flex flex-col items-center min-h-screen overflow-x-hidden">
 
-    <div id="login-view" class="w-full max-w-md flex-1 flex flex-col justify-between p-8 z-10">
+    <div id="login-view" class="w-full max-w-md flex-1 flex flex-col justify-between p-8 z-10 transition-all duration-500">
         <div class="mt-12 text-center">
             <div class="w-20 h-20 gradido-gradient rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-green-200 animate-float">
                 <span class="text-white font-extrabold text-4xl">G</span>
             </div>
             <h1 class="text-4xl font-extrabold mt-8 tracking-tight">Gradido</h1>
-            <p class="text-slate-500 mt-2 text-lg">Ökonomie des Vertrauens</p>
+            <p class="text-slate-500 mt-2 text-lg">Natürliche Ökonomie</p>
         </div>
 
         <div class="space-y-6">
-            <div class="bg-white/50 p-6 rounded-3xl border border-white shadow-sm">
-                <p class="text-slate-600 leading-relaxed text-center italic">
-                    "Verbinde deine World ID, um Teil eines globalen Netzwerks für das dreifache Wohl zu werden."
-                </p>
+            <div id="status-msg" class="bg-white/50 p-6 rounded-3xl border border-white shadow-sm text-center text-slate-600">
+                Verbinde deine World ID für den Live-Zugriff auf dein Gradido-Konto.
             </div>
-            <button onclick="handleLogin()" class="w-full bg-slate-950 text-white py-5 rounded-3xl text-xl font-bold shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3">
+            <button id="login-btn" onclick="handleLogin()" class="w-full bg-slate-950 text-white py-5 rounded-3xl text-xl font-bold shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3">
                 <img src="https://worldcoin.org/icons/world-id-white.svg" class="w-6 h-6" alt="">
                 World ID Login
             </button>
-            <p class="text-center text-xs text-slate-400 uppercase tracking-widest font-semibold">Verified Human Only</p>
         </div>
-        <div class="safe-area-bottom pb-4"></div>
+        <div class="safe-area-bottom pb-4 text-center text-[10px] text-slate-400 uppercase tracking-widest">Global Infrastructure v2.1</div>
     </div>
 
     <div id="dashboard-view" class="hidden w-full max-w-md flex-1 flex flex-col p-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -55,67 +54,63 @@
 
         <div class="gradido-gradient p-8 rounded-[2.5rem] text-white shadow-2xl shadow-green-200 relative overflow-hidden mb-8">
             <div class="relative z-10">
-                <div class="flex items-center gap-2 opacity-80 text-sm font-semibold uppercase tracking-wider mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    Verifiziertes Guthaben
-                </div>
-                <h2 id="display-balance" class="text-6xl font-black tracking-tighter">1.450 <span class="text-green-200 text-2xl font-medium tracking-normal">GDD</span></h2>
-                <div id="user-display" class="mt-8 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full inline-block text-[10px] font-mono border border-white/10 italic"></div>
+                <p class="opacity-80 text-sm font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Live Saldo
+                </p>
+                <h2 id="display-balance" class="text-5xl font-black tracking-tighter">Lade...</h2>
+                <div id="user-display" class="mt-8 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full inline-block text-[10px] font-mono border border-white/10 italic truncate max-w-full"></div>
             </div>
             <div class="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-8">
             <button onclick="toggleModal('send-modal')" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-white flex flex-col items-center group active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition-colors text-2xl">↗️</div>
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-3 text-2xl">↗️</div>
                 <span class="font-bold text-slate-800 text-sm">Senden</span>
             </button>
-            <button onclick="alert('Gradido-Schöpfung erfolgt automatisch.')" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-white flex flex-col items-center group active:scale-95 transition-all">
-                <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-green-600 group-hover:text-white transition-colors text-2xl">🌱</div>
+            <button onclick="alert('Gradido-Schöpfung wird monatlich gutgeschrieben.')" class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-white flex flex-col items-center group active:scale-95 transition-all">
+                <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-3 text-2xl">🌱</div>
                 <span class="font-bold text-slate-800 text-sm">Schöpfen</span>
             </button>
         </div>
-
-        <div class="bg-white/50 border border-dashed border-slate-200 p-6 rounded-[2rem] text-center">
-            <p class="text-slate-400 text-sm">Keine aktuellen Transaktionen vorhanden.</p>
-        </div>
     </div>
 
-    <div id="send-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-end justify-center z-50">
-        <div class="bg-white w-full max-w-md p-8 rounded-t-[3rem] shadow-2xl animate-in slide-in-from-bottom duration-500">
+    <div id="send-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-end justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md p-8 rounded-[3rem] shadow-2xl animate-in slide-in-from-bottom duration-500 mb-4">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-8"></div>
             <div class="flex justify-between items-center mb-8">
-                <h3 class="text-3xl font-black tracking-tight">Senden</h3>
+                <h3 class="text-3xl font-black tracking-tight">Überweisen</h3>
                 <button onclick="toggleModal('send-modal')" class="text-slate-300 text-3xl font-light hover:text-slate-900">&times;</button>
             </div>
             
             <div class="space-y-6">
-                <div class="relative">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-1 block">Empfänger</label>
-                    <input id="send-recipient" type="text" placeholder="E-Mail oder World ID" class="w-full bg-slate-50 border-2 border-slate-50 p-5 rounded-3xl focus:border-green-500 focus:bg-white outline-none transition-all font-semibold">
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-1 block">Empfänger (Email/WorldID)</label>
+                    <input id="send-recipient" type="text" placeholder="name@mail.com" class="w-full bg-slate-50 border-2 border-slate-50 p-5 rounded-3xl focus:border-green-500 outline-none transition-all font-semibold">
                 </div>
-                <div class="relative">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-1 block">Betrag (GDD)</label>
-                    <input id="send-amount" type="number" placeholder="0.00" class="w-full bg-slate-50 border-2 border-slate-50 p-5 rounded-3xl focus:border-green-500 focus:bg-white outline-none transition-all font-bold text-2xl">
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-1 block">Betrag in GDD</label>
+                    <input id="send-amount" type="number" placeholder="0.00" class="w-full bg-slate-50 border-2 border-slate-50 p-5 rounded-3xl focus:border-green-500 outline-none transition-all font-bold text-2xl">
                 </div>
-                <button onclick="processTransaction()" class="w-full gradido-gradient text-white py-6 rounded-[2rem] text-xl font-bold shadow-2xl shadow-green-200 active:scale-95 transition-all mt-4">
-                    Transaktion bestätigen
+                <button id="confirm-btn" onclick="processTransaction()" class="w-full gradido-gradient text-white py-6 rounded-[2rem] text-xl font-bold shadow-2xl active:scale-95 transition-all mt-4">
+                    Bestätigen
                 </button>
             </div>
-            <div class="safe-area-bottom pb-4"></div>
         </div>
     </div>
 
     <script>
         const APP_ID = 'app_1982c9d5bc68380b9d48904d2327f913';
+        const API_URL = 'https://api.gradido.net/graphql';
 
         window.onload = () => { if (window.MiniKit) window.MiniKit.install(APP_ID); };
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
         async function handleLogin() {
+            const btn = document.getElementById('login-btn');
             try {
-                // In der World App läuft die Verifizierung
+                btn.innerText = "Verifiziere...";
                 const { finalPayload } = await window.MiniKit.commandsAsync.verify({
                     action: 'login-gradido',
                     verification_level: 'orb',
@@ -123,27 +118,72 @@
                 });
 
                 if (finalPayload.status === 'success') {
-                    showDashboard(finalPayload.nullifier_hash);
+                    const worldId = finalPayload.nullifier_hash;
+                    showDashboard(worldId);
+                    fetchLiveBalance(worldId);
                 }
             } catch (e) {
-                console.log("Simulator Mode active");
-                showDashboard("human_sim_88229911");
+                console.error("Simulator Mode");
+                showDashboard("demo_user_12345");
+                document.getElementById('display-balance').innerHTML = `1.234,50 <span class="text-green-200 text-2xl">GDD</span>`;
             }
         }
 
         function showDashboard(id) {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
-            document.getElementById('user-display').innerText = `WorldID: ${id.slice(0, 15)}...`;
+            document.getElementById('user-display').innerText = `WorldID: ${id}`;
+        }
+
+        async function fetchLiveBalance(worldId) {
+            const query = `query($id: String!) { balance(identifier: $id) { balance decay lastUpdate } }`;
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, variables: { id: worldId } })
+                });
+                const { data } = await res.json();
+                if (data && data.balance) {
+                    const amount = parseFloat(data.balance.balance) / 10000;
+                    document.getElementById('display-balance').innerHTML = `${amount.toLocaleString('de-DE')} <span class="text-green-200 text-2xl font-medium tracking-normal">GDD</span>`;
+                }
+            } catch (err) {
+                document.getElementById('display-balance').innerText = "0,00 GDD";
+            }
         }
 
         async function processTransaction() {
             const dest = document.getElementById('send-recipient').value;
-            const val = document.getElementById('send-amount').value;
-            if(!dest || !val) return alert("Fehlende Daten");
+            const amount = document.getElementById('send-amount').value;
+            const btn = document.getElementById('confirm-btn');
 
-            alert(`🚀 Transaktion an ${dest} über ${val} GDD gestartet!`);
-            toggleModal('send-modal');
+            if(!dest || !amount) return alert("Bitte alles ausfüllen");
+            
+            btn.innerText = "Übermittelt...";
+            btn.disabled = true;
+
+            const mutation = `mutation($to: String!, $qty: Decimal!) { sendCoins(recipient: $to, amount: $qty, memo: "World App Transfer") { success } }`;
+            
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: mutation, variables: { to: dest, qty: parseFloat(amount) } })
+                });
+                const { data } = await res.json();
+                if(data?.sendCoins?.success) {
+                    alert("Erfolg! Gradido gesendet.");
+                    location.reload();
+                } else {
+                    alert("Transaktion fehlgeschlagen.");
+                }
+            } catch (e) {
+                alert("Verbindungsfehler zum Gradido-Server.");
+            } finally {
+                btn.innerText = "Bestätigen";
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
