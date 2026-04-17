@@ -1,86 +1,72 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gradido World Mini App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@worldcoin/minikit-js@latest/dist/minikit.js"></script>
-</head>
-<body class="bg-white text-gray-900 font-sans flex flex-col items-center min-h-screen">
+<div id="wallet-view" class="hidden animate-in fade-in duration-500 space-y-6">
+    <div class="bg-neutral-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden text-left">
+        <p class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2">Aktives Guthaben</p>
+        <h2 id="display-balance" class="text-5xl font-light tracking-tighter">1.000 <span class="text-green-500 font-bold">GDD</span></h2>
+        <p id="user-id" class="mt-8 opacity-50 text-[10px] font-mono truncate"></p>
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-600 opacity-20 rounded-full blur-3xl"></div>
+    </div>
 
-    <header class="w-full max-w-md p-6 flex justify-between items-center border-b">
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center shadow-lg">
-                <span class="text-white font-bold text-xl">G</span>
+    <div class="grid grid-cols-2 gap-4">
+        <button onclick="alert('Gradido schöpfen: Dein Grundeinkommen wird monatlich automatisch gutgeschrieben.')" class="bg-green-50 text-green-800 p-6 rounded-3xl font-bold border border-green-100 flex flex-col items-center transition-active active:scale-95">
+            <span class="text-2xl mb-1">🌱</span> Schöpfen
+        </button>
+        <button onclick="toggleSendModal()" class="bg-gray-50 text-gray-800 p-6 rounded-3xl font-bold border border-gray-100 flex flex-col items-center transition-active active:scale-95">
+            <span class="text-2xl mb-1">🚀</span> Senden
+        </button>
+    </div>
+
+    <div id="send-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end justify-center z-50">
+        <div class="bg-white w-full max-w-md p-8 rounded-t-[2.5rem] shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">GDD Senden</h3>
+                <button onclick="toggleSendModal()" class="text-gray-400 text-2xl">&times;</button>
             </div>
-            <span class="text-2xl font-black tracking-tighter text-green-800">Gradido</span>
-        </div>
-    </header>
-
-    <main id="app" class="w-full max-w-md flex-1 px-6 flex flex-col justify-center text-center">
-        <div id="login-view" class="space-y-8">
-            <h1 class="text-5xl font-extrabold tracking-tight leading-tight">
-                Geld im Einklang mit der <span class="text-green-600">Natur</span>.
-            </h1>
-            <p class="text-gray-500 text-lg">Werde Teil der globalen Ökonomie. Verifiziert durch World ID.</p>
-            <button onclick="handleLogin()" class="w-full bg-black text-white py-5 rounded-3xl text-xl font-bold shadow-xl active:scale-95 transition-all">
-                Starten mit World ID
-            </button>
-        </div>
-
-        <div id="wallet-view" class="hidden animate-in fade-in duration-500 space-y-6">
-            <div class="bg-neutral-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden text-left">
-                <p class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2">Aktiviertes Konto</p>
-                <h2 class="text-5xl font-light tracking-tighter">1.000 <span class="text-green-500 font-bold">GDD</span></h2>
-                <p id="user-id" class="mt-8 opacity-50 text-[10px] font-mono truncate"></p>
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-600 opacity-20 rounded-full blur-3xl"></div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <button class="bg-green-50 text-green-800 p-6 rounded-3xl font-bold border border-green-100 flex flex-col items-center">
-                    <span class="text-2xl mb-1">🌱</span> Schöpfen
-                </button>
-                <button class="bg-gray-50 text-gray-800 p-6 rounded-3xl font-bold border border-gray-100 flex flex-col items-center">
-                    <span class="text-2xl mb-1">🚀</span> Senden
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Empfänger (World ID oder E-Mail)</label>
+                    <input id="send-recipient" type="text" placeholder="0x... oder name@mail.com" class="w-full bg-gray-100 border-none p-4 rounded-2xl mt-1 focus:ring-2 focus:ring-green-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Betrag (GDD)</label>
+                    <input id="send-amount" type="number" placeholder="0.00" class="w-full bg-gray-100 border-none p-4 rounded-2xl mt-1 focus:ring-2 focus:ring-green-500 outline-none">
+                </div>
+                <button onclick="confirmSend()" class="w-full bg-green-600 text-white py-5 rounded-2xl text-xl font-bold shadow-lg mt-4 active:scale-95 transition-all">
+                    Jetzt Senden
                 </button>
             </div>
         </div>
-    </main>
+    </div>
+</div>
 
-    <footer class="w-full max-w-md p-8 text-center text-xs text-gray-400">
-        Gradido Protocol &bull; World.org Mini App v2.0
-    </footer>
+<script>
+    // Hilfsfunktionen für die UI
+    function toggleSendModal() {
+        const modal = document.getElementById('send-modal');
+        modal.classList.toggle('hidden');
+    }
 
-    <script>
-        const appId = 'app_1982c9d5bc68380b9d48904d2327f913';
+    async function confirmSend() {
+        const recipient = document.getElementById('send-recipient').value;
+        const amount = document.getElementById('send-amount').value;
 
-        // Initialisierung
-        window.onload = () => {
-            if (window.MiniKit) {
-                window.MiniKit.install(appId);
-            }
-        };
-
-        async function handleLogin() {
-            try {
-                const { finalPayload } = await window.MiniKit.commandsAsync.verify({
-                    action: 'login-gradido',
-                    verification_level: 'orb',
-                    signal: 'gradido-auth'
-                });
-
-                if (finalPayload.status === 'success') {
-                    document.getElementById('login-view').classList.add('hidden');
-                    document.getElementById('wallet-view').classList.remove('hidden');
-                    document.getElementById('user-id').innerText = 'ID: ' + finalPayload.nullifier_hash;
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Demo-Modus: In der World App würde jetzt dein Konto geöffnet.");
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('wallet-view').classList.remove('hidden');
-            }
+        if(!recipient || !amount) {
+            alert("Bitte Empfänger und Betrag eingeben.");
+            return;
         }
-    </script>
-</body>
-</html>
+
+        // Hier nutzen wir das World MiniKit für die Bezahlung
+        try {
+            // Wenn Gradido auf World-Chain (Layer 2) läuft, nutzen wir:
+            // MiniKit.commandsAsync.sendTransaction(...)
+            
+            alert(`Sende ${amount} GDD an ${recipient}...`);
+            
+            // Simulation der Transaktion
+            toggleSendModal();
+            alert("Transaktion erfolgreich! Dein Saldo wird aktualisiert.");
+        } catch (error) {
+            console.error("Fehler beim Senden", error);
+        }
+    }
+</script>
