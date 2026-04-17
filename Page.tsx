@@ -6,7 +6,7 @@ import { MiniKit, VerificationLevel } from "@worldcoin/minikit-js";
  * KONFIGURATION
  * Ersetze 'app_your_id' durch die ID aus deinem World Developer Portal
  */
-const WORLD_APP_ID = "app_gradido_test_123"; 
+const WORLD_APP_ID = "app_1982c9d5bc68380b9d48904d2327f913"; 
 
 export default function GradidoWorldApp() {
   const [isLogged, setIsLogged] = useState(false);
